@@ -1,0 +1,6 @@
+form .field-with-error input {
+  background-color: #FDDFDE;
+}
+form .field-error-message {
+  color: #B94A48;
+}
