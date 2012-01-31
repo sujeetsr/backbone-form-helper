@@ -5,20 +5,28 @@
     <script src="lib/underscore.js"></script>
     <script src="lib/backbone-0.5.3.js"></script>
     <script src="js/backbone-form-helper.js"></script>
-    <script src="js/contact_model.js"></script>
-    <script src="js/contact_view.js"></script>
-    <script src="js/contact_template.js"></script>
     <script src="js/example.js"></script>
     <link rel="stylesheet" href="css/style.css">
   </head>
   
   <body>
+
+    <!-- Contact Template -->
+    <script id="contact_template" type="text/html">
+      <% BackboneFormHelper.form(contact, function(f) { %>
+        <%= f.label('name', 'Contact Name') %> : <%= f.text('name', {placeholder: 'Contact Name'}) %>
+      <% }) %>
+    </script>
+
+    <!-- content -->
     <div>
 
+      <!-- Form without errors -->
       <b>Contact form</b>
       <form id="ok-contact-form"> </form>
 
       <br/>
+      <!-- Form with errors -->
       <b>Contact form with error</b>
       <form id="err-contact-form"> </form>
     </div>
