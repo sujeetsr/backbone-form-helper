@@ -86,11 +86,11 @@
     },
 
     //input type="date"
-    date: function(model, field, opts, prefix) {
+    date: function(field, opts, prefix) {
       var tag_open = '<input type="date" ';
       var body_str = '';
       var tag_end = '';
-      return helper.tag('date', model, field, opts, prefix, tag_open, body_str, tag_end).tag_string();
+      return helper.tag('date', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
     },
 
     // label
@@ -102,32 +102,32 @@
     },
 
     // textarea
-    textarea: function(model, field, text, opts, prefix) {
+    textarea: function(field, text, opts, prefix) {
       opts = _.isUndefined(opts) ? {} : opts;
       var tag_open = '<textarea ';
       var body_str = model.escape(field);
       var tag_end = '</textarea>';
-      return helper.tag('textarea', model, field, opts, prefix, tag_open, body_str, tag_end).tag_string();
+      return helper.tag('textarea', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
     },
 
     // input type="hidden"
-    hidden: function(model, field, opts, prefix) {
+    hidden: function(field, opts, prefix) {
       var tag_open = '<input type="hidden" ';
       var body_str = '';
       var tag_end = '';
-      return helper.tag('hidden', model, field, opts, prefix, tag_open, body_str, tag_end).tag_string();
+      return helper.tag('hidden', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
     },
 
     // input type="password"
-    password: function(model, field, opts, prefix) {
+    password: function(field, opts, prefix) {
       var tag_open = '<input type="password" ';
       var body_str = '';
       var tag_end = '';
-      return helper.tag('password', model, field, opts, prefix, tag_open, body_str, tag_end).tag_string();
+      return helper.tag('password', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
     },
 
     // input type="checkbox"
-    checkbox: function(model, field, opts, prefix) {
+    checkbox: function(field, opts, prefix) {
       var tag_open = '<input type="checkbox" ';
       var checked = '';
       if (model.get(field) == true) {
@@ -136,7 +136,7 @@
       tag_open += checked;
       var body_str = '';
       var tag_end = '';
-      return helper.tag('checkbox', model, field, opts, prefix, tag_open, body_str, tag_end).tag_string();
+      return helper.tag('checkbox', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
     },
 
     // options for select tag
@@ -152,11 +152,11 @@
     },
 
     // select tag
-    select: function(model, field, options_array, opts, prefix) {
+    select: function(field, options_array, opts, prefix) {
       tag = '<select name="' + field + '"> ';
       _.each(options_array, function(o) {
         tag += '<option value="' + o.value + '" ';
-        if (model.get(field) == o.value) {
+        if (this.model.get(field) == o.value) {
           tag += 'selected = "selected"';
         }
         tag += '>' + o.name + '</option>';
@@ -166,10 +166,10 @@
     },
   
     // radio
-    radio: function(model, field, options_array, opts, prefix) {
+    radio: function(field, options_array, opts, prefix) {
       tag = '';
       _.each(options_array, function(o, index) {
-        checked = (model.get(field) == o.value) ? 'checked ' : ' ';
+        checked = (this.model.get(field) == o.value) ? 'checked ' : ' ';
         input_style='style = "display: inline" ';
         label_style='style = "display: inline" ';
         id = 'id = "' + field + '_' + index + '" ';
