@@ -1,2 +1,7 @@
-var contact_template = _.template('<%= BackboneFormHelper.label(contact, \'name\', \'Contact Name\') %>: <%= BackboneFormHelper.text(contact, \'name\', {placeholder: \'Contact Name\'}) %>');
+tmpl = '<% BackboneFormHelper.form(contact, function(form) { %>' +
+  '<%= form.label(\'name\', \'Contact Name\') %>' +
+  ': ' +
+  '<%= form.text(\'name\', {placeholder: \'Contact Name\'}) %>' +
+  '<% }) %>';
+var contact_template = _.template(tmpl);
 

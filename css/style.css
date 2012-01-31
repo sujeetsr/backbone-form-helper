@@ -4,3 +4,7 @@ form .field-with-error input {
 form .field-error-message {
   color: #B94A48;
 }
+
+form .field-with-error label {
+  color: #B94A48;
+}

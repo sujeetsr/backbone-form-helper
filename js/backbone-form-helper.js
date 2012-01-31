@@ -27,39 +27,62 @@
     },
 
     // wrap tag in field-with-error span if errors present
-    wrap_errors: function(model, field, tag, tag_name) {
+    wrap_errors: function(model, field, tag_str, tag_name) {
       if (model.get('errors') != undefined && model.get('errors')[field] != undefined) {
+        var e = model.get('errors');
+        var x = e[field];
         if (tag_name != 'label') {
           // if not label tag, show error message
-          return '<span class="field-with-error">' + tag + '&nbsp;<span class="field-error-message">' + model.get('errors')[field] + '</span></span>'; 
+          return '<span class="field-with-error">' + tag_str + '&nbsp;<span class="field-error-message">' + model.get('errors')[field] + '</span></span>'; 
         } else {
-          return '<span class="field-with-error">' + tag + '</span>'; 
+          return '<span class="field-with-error">' + tag_str + '</span>'; 
         }
       } else {
-        return tag;
+        return tag_str;
       }
     },
 
-    tag: function(tag_name, model, field, opts, prefix, tag_open, body_str, tag_end) {
-      var tag_obj = {};
-      tag_obj.tag_string = function() {
-        opts = _.isUndefined(opts) ? {} : opts;
-        var val_str = ( tag_name == 'textarea') ? '' : helper.get_val_str(model, field);
-        var opts_str = helper.get_opt_str(opts);
-        var id_str = helper.get_id_str(model, field, tag_name);
-        var name_str = helper.get_name_str(model, field, tag_name);
-        var tag = tag_open + val_str + name_str + id_str + opts_str + '>' + body_str + tag_end;
-        return helper.wrap_errors(model, field, tag, tag_name);
+    form: function(model, form_body_fn) {
+      var form_obj = {
+        model: model,
+        label: helper.label,
+        tag: helper.tag,
+        get_opt_str: helper.get_opt_str,
+        get_val_str: helper.get_val_str,
+        get_id_str: helper.get_id_str,
+        get_name_str: helper.get_name_str,
+        wrap_errors: helper.wrap_errors,
+        text: helper.text 
       };
-      return tag_obj;
+      form_body_fn(form_obj);
+    },
+
+    tag: function(tag_name, field, opts, prefix, tag_open, body_str, tag_end) {
+      //var tag_obj = {};
+      //tag_obj.tag_string = function(form) {
+        //opts = _.isUndefined(opts) ? {} : opts;
+        //var val_str = ( tag_name == 'textarea') ? '' : this.get_val_str(this.model, field);
+        //var opts_str = helper.get_opt_str(opts);
+        //var id_str = helper.get_id_str(this.model, field, tag_name);
+        //var name_str = helper.get_name_str(this.model, field, tag_name);
+        //var tag = tag_open + val_str + name_str + id_str + opts_str + '>' + body_str + tag_end;
+        //return this.wrap_errors(this.model, field, tag, tag_name);
+      //};
+      opts = _.isUndefined(opts) ? {} : opts;
+      var val_str = ( tag_name == 'textarea') ? '' : this.get_val_str(this.model, field);
+      var opts_str = this.get_opt_str(opts);
+      var id_str = this.get_id_str(this.model, field, tag_name);
+      var name_str = this.get_name_str(this.model, field, tag_name);
+      var tag_str = tag_open + val_str + name_str + id_str + opts_str + '>' + body_str + tag_end;
+      return this.wrap_errors(this.model, field, tag_str, tag_name);
     },
 
     // input type="text"
-    text: function(model, field, opts, prefix) {
+    text: function(field, opts, prefix) {
       var tag_open = '<input type="text" ';
       var body_str = '';
       var tag_end = '';
-      return helper.tag('text', model, field, opts, prefix, tag_open, body_str, tag_end).tag_string();
+      return this.tag('text', field, opts, prefix, tag_open, body_str, tag_end);
     },
 
     //input type="date"
@@ -71,11 +94,11 @@
     },
 
     // label
-    label: function(model, field, label_text, opts, prefix) {
+    label: function(field, label_text, opts, prefix) {
       var tag_open = '<label for="' + field +  '" ';
       var body_str = label_text;
       var tag_end = '</label>';
-      return helper.tag('label', model, field, opts, prefix, tag_open, body_str, tag_end).tag_string();
+      return this.tag('label', field, opts, prefix, tag_open, body_str, tag_end);
     },
 
     // textarea
