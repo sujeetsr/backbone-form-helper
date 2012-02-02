@@ -12,17 +12,38 @@
     },
 
     // Create value part of tag string
-    get_val_str: function(model, field) {
-      return 'value="' + model.escape(field) + '" ';
+    get_val_str: function(model, field, tag_name, opts) {
+      value = ""
+      if (_.include(_.keys(opts), 'value')) {
+        value = opts['value'];
+        delete opts['value'];
+      } else {
+        if (tag_name != 'textarea') {
+          value = model.escape(field);
+        }
+      }
+      return 'value="' + value + '" ';
     },
 
-    get_name_str: function(model, field, tag_name) {
-      var name = (tag_name == 'label') ? field + '_label' : field;
+    get_name_str: function(model, field, tag_name, opts) {
+      var name = "";
+      if (_.include(_.keys(opts), 'name')) {
+        name = opts['name'];
+        delete opts['name'];
+      } else {
+        name = (tag_name == 'label') ? field + '_label' : field;
+      }
       return 'name="' + name + '" ';
     },
 
-    get_id_str: function(model, field, tag_name) {
-      var id = (tag_name == 'label') ? field + '_label' : field;
+    get_id_str: function(model, field, tag_name, opts) {
+      var id = "";
+      if (_.include(_.keys(opts), 'id')) {
+        id = opts['id'];
+        delete opts['id'];
+      } else {
+        id = (tag_name == 'label') ? field + '_label' : field;
+      }
       return 'id="' + id + '" ';
     },
 
@@ -45,34 +66,32 @@
     form: function(model, form_body_fn) {
       var form_obj = {
         model: model,
-        label: helper.label,
-        tag: helper.tag,
         get_opt_str: helper.get_opt_str,
         get_val_str: helper.get_val_str,
         get_id_str: helper.get_id_str,
         get_name_str: helper.get_name_str,
         wrap_errors: helper.wrap_errors,
-        text: helper.text 
+        tag: helper.tag,
+        text: helper.text,
+        label: helper.label,
+        date: helper.date,
+        textarea: helper.textarea,
+        hidden: helper.hidden,
+        password: helper.password,
+        checkbox: helper.checkbox,
+        generate_options_array: helper.generate_options_array,
+        select: helper.select,
+        radio: helper.radio,
       };
       form_body_fn(form_obj);
     },
 
     tag: function(tag_name, field, opts, prefix, tag_open, body_str, tag_end) {
-      //var tag_obj = {};
-      //tag_obj.tag_string = function(form) {
-        //opts = _.isUndefined(opts) ? {} : opts;
-        //var val_str = ( tag_name == 'textarea') ? '' : this.get_val_str(this.model, field);
-        //var opts_str = helper.get_opt_str(opts);
-        //var id_str = helper.get_id_str(this.model, field, tag_name);
-        //var name_str = helper.get_name_str(this.model, field, tag_name);
-        //var tag = tag_open + val_str + name_str + id_str + opts_str + '>' + body_str + tag_end;
-        //return this.wrap_errors(this.model, field, tag, tag_name);
-      //};
       opts = _.isUndefined(opts) ? {} : opts;
-      var val_str = ( tag_name == 'textarea') ? '' : this.get_val_str(this.model, field);
+      var val_str = this.get_val_str(this.model, field, tag_name, opts);
+      var id_str = this.get_id_str(this.model, field, tag_name, opts);
+      var name_str = this.get_name_str(this.model, field, tag_name, opts);
       var opts_str = this.get_opt_str(opts);
-      var id_str = this.get_id_str(this.model, field, tag_name);
-      var name_str = this.get_name_str(this.model, field, tag_name);
       var tag_str = tag_open + val_str + name_str + id_str + opts_str + '>' + body_str + tag_end;
       return this.wrap_errors(this.model, field, tag_str, tag_name);
     },
@@ -90,7 +109,7 @@
       var tag_open = '<input type="date" ';
       var body_str = '';
       var tag_end = '';
-      return helper.tag('date', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
+      return this.tag('date', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
     },
 
     // label
@@ -105,9 +124,9 @@
     textarea: function(field, text, opts, prefix) {
       opts = _.isUndefined(opts) ? {} : opts;
       var tag_open = '<textarea ';
-      var body_str = model.escape(field);
+      var body_str = this.model.escape(field);
       var tag_end = '</textarea>';
-      return helper.tag('textarea', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
+      return this.tag('textarea', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
     },
 
     // input type="hidden"
@@ -115,7 +134,7 @@
       var tag_open = '<input type="hidden" ';
       var body_str = '';
       var tag_end = '';
-      return helper.tag('hidden', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
+      return this.tag('hidden', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
     },
 
     // input type="password"
@@ -123,20 +142,20 @@
       var tag_open = '<input type="password" ';
       var body_str = '';
       var tag_end = '';
-      return helper.tag('password', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
+      return this.tag('password', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
     },
 
     // input type="checkbox"
     checkbox: function(field, opts, prefix) {
       var tag_open = '<input type="checkbox" ';
       var checked = '';
-      if (model.get(field) == true) {
+      if (this.model.get(field) == true) {
         checked = 'checked="true" ';
       }
       tag_open += checked;
       var body_str = '';
       var tag_end = '';
-      return helper.tag('checkbox', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
+      return this.tag('checkbox', field, opts, prefix, tag_open, body_str, tag_end);
     },
 
     // options for select tag

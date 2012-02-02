@@ -1,10 +1,35 @@
-form .field-with-error input {
-  background-color: #FDDFDE;
-}
-form .field-error-message {
-  color: #B94A48;
-}
+/* Reset */
 
-form .field-with-error label {
-  color: #B94A48;
-}
+/* http://meyerweb.com/eric/tools/css/reset/ */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video { margin: 0; padding: 0; border: 0; font-size: 100%; font: inherit; vertical-align: baseline; } /* HTML5 display-role reset for older browsers */ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display: block; }
+body { line-height: 1; }
+ol, ul { list-style: none; }
+blockquote, q { quotes: none; }
+blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; }
+table { border-collapse: collapse; border-spacing: 0; }
+
+/* set font and main styles */
+body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 18px; }
+
+h3 { line-height: 27px; font-size: 18px; margin-bottom: 9px; }
+#content { margin-top:50px; margin-left: 20px;}
+
+/* Form styles */
+/* from twitter bootstrap (http://twitter.github.com/bootstrap/) */
+label { color: #333333; line-height: 18px; padding: 4px; margin-bottom: 9px; font-size: 13px; line-height: 18px; }
+input, textarea, select { width: 210px; padding: 4px; margin-bottom: 9px; font-size: 13px; line-height: 18px; color: #555555; border: 1px solid #ccc; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; }
+input[type="file"] { padding: initial; line-height: initial; border: initial; background-color: #ffffff; background-color: initial; -webkit-box-shadow: none; -moz-box-shadow: none; box-shadow: none; }
+input[type="button"], input[type="reset"], input[type="submit"] { width: auto; height: auto; }
+select, input[type="file"] { height: 28px; /* In IE7, the height of the select element cannot be changed by height, only font-size */ *margin-top: 4px; /* For IE7, add top margin to align select with labels */ line-height: 28px; }
+select { width: 220px; background-color: #ffffff; }
+textarea { height: auto; }
+.radio, .checkbox { padding-left: 18px; }
+.radio input[type="radio"], .checkbox input[type="checkbox"] { float: left; margin-left: -18px; }
+input, textarea { -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075); -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075); box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075); -webkit-transition: border linear 0.2s, box-shadow linear 0.2s; -moz-transition: border linear 0.2s, box-shadow linear 0.2s; -ms-transition: border linear 0.2s, box-shadow linear 0.2s; -o-transition: border linear 0.2s, box-shadow linear 0.2s; transition: border linear 0.2s, box-shadow linear 0.2s; }
+input:focus, textarea:focus { border-color: rgba(82, 168, 236, 0.8); -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6); -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6); box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6); outline: 0; outline: thin dotted \9; /* IE6-8 */ }
+input[type="file"]:focus, input[type="checkbox"]:focus, select:focus { -webkit-box-shadow: none; -moz-box-shadow: none; box-shadow: none; outline: thin dotted; outline: 5px auto -webkit-focus-ring-color; outline-offset: -2px; }
+
+/* Error styles - the fields with errors are styled with these classes */
+form .field-with-error input { background-color: #FDDFDE; }
+form .field-error-message { color: #B94A48; }
+form .field-with-error label { color: #B94A48; }
