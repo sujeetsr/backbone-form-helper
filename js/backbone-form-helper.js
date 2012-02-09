@@ -73,7 +73,7 @@
       }
 
       // Create an object with the model and helper functions, which will
-      // be the '**this**' reference within the tag functions. 
+      // be the `this` reference within the tag functions. 
       var form_obj = {
         model: model,
         get_opt_str: helper.get_opt_str,
@@ -98,7 +98,7 @@
       form_body_fn(form_obj);
     },
 
-    tag: function(tag_name, field, opts, prefix, tag_open, body_str, tag_end) {
+    tag: function(tag_name, field, opts, tag_open, body_str, tag_end) {
       opts = _.isUndefined(opts) ? {} : opts;
       var val_str = this.get_val_str(this.model, field, tag_name, opts);
       var id_str = this.get_id_str(this.model, field, tag_name, opts);
@@ -109,56 +109,56 @@
     },
 
     // input type="text"
-    text: function(field, opts, prefix) {
+    text: function(field, opts) {
       var tag_open = '<input type="text" ';
       var body_str = '';
       var tag_end = '';
-      return this.tag('text', field, opts, prefix, tag_open, body_str, tag_end);
+      return this.tag('text', field, opts, tag_open, body_str, tag_end);
     },
 
     //input type="date"
-    date: function(field, opts, prefix) {
+    date: function(field, opts) {
       var tag_open = '<input type="date" ';
       var body_str = '';
       var tag_end = '';
-      return this.tag('date', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
+      return this.tag('date', field, opts, tag_open, body_str, tag_end).tag_string();
     },
 
     // label
-    label: function(field, label_text, opts, prefix) {
+    label: function(field, label_text, opts) {
       var tag_open = '<label for="' + field +  '" ';
       var body_str = label_text;
       var tag_end = '</label>';
-      return this.tag('label', field, opts, prefix, tag_open, body_str, tag_end);
+      return this.tag('label', field, opts, tag_open, body_str, tag_end);
     },
 
     // textarea
-    textarea: function(field, text, opts, prefix) {
+    textarea: function(field, text, opts) {
       opts = _.isUndefined(opts) ? {} : opts;
       var tag_open = '<textarea ';
       var body_str = this.model.escape(field);
       var tag_end = '</textarea>';
-      return this.tag('textarea', field, opts, prefix, tag_open, body_str, tag_end);
+      return this.tag('textarea', field, opts, tag_open, body_str, tag_end);
     },
 
     // input type="hidden"
-    hidden: function(field, opts, prefix) {
+    hidden: function(field, opts) {
       var tag_open = '<input type="hidden" ';
       var body_str = '';
       var tag_end = '';
-      return this.tag('hidden', field, opts, prefix, tag_open, body_str, tag_end);
+      return this.tag('hidden', field, opts, tag_open, body_str, tag_end);
     },
 
     // input type="password"
-    password: function(field, opts, prefix) {
+    password: function(field, opts) {
       var tag_open = '<input type="password" ';
       var body_str = '';
       var tag_end = '';
-      return this.tag('password', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
+      return this.tag('password', field, opts, tag_open, body_str, tag_end).tag_string();
     },
 
     // input type="checkbox"
-    checkbox: function(field, opts, prefix) {
+    checkbox: function(field, opts) {
       var tag_open = '<input type="checkbox" ';
       var checked = '';
       if (this.model.get(field) == true) {
@@ -167,7 +167,7 @@
       tag_open += checked;
       var body_str = '';
       var tag_end = '';
-      return this.tag('checkbox', field, opts, prefix, tag_open, body_str, tag_end);
+      return this.tag('checkbox', field, opts, tag_open, body_str, tag_end);
     },
 
     // options for select tag
@@ -183,7 +183,7 @@
     },
 
     // select tag
-    select: function(field, options_array, opts, prefix) {
+    select: function(field, options_array, opts) {
       tag = '<select name="' + field + '"> ';
       _.each(options_array, function(o) {
         tag += '<option value="' + o.value + '" ';
@@ -197,7 +197,7 @@
     },
   
     // radio
-    radio: function(field, options_array, opts, prefix) {
+    radio: function(field, options_array, opts) {
       tag = '';
       _.each(options_array, function(o, index) {
         checked = (this.model.get(field) == o.value) ? 'checked ' : ' ';
