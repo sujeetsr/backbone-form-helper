@@ -1,69 +1,8 @@
 (function() {
   var helper = {
     
-    // Combine options into a string of the form 'key = value'
-    get_opt_str: function(opts) {
-      if (opts != undefined) {
-        var opt_str = _.reduce(_.keys(opts), function(s, k) {
-          return s + k + '="' + opts[k] + '" ';
-        }, '');
-        return opt_str;
-      }
-    },
 
-    // Create value part of tag string
-    get_val_str: function(model, field, tag_name, opts) {
-      value = ""
-      if (_.include(_.keys(opts), 'value')) {
-        value = opts['value'];
-        delete opts['value'];
-      } else {
-        if (tag_name != 'textarea') {
-          value = model.escape(field);
-        }
-      }
-      return 'value="' + value + '" ';
-    },
-
-    get_name_str: function(model, field, tag_name, opts) {
-      var name = "";
-      if (_.include(_.keys(opts), 'name')) {
-        name = opts['name'];
-        delete opts['name'];
-      } else {
-        name = (tag_name == 'label') ? field + '_label' : field;
-      }
-      return 'name="' + name + '" ';
-    },
-
-    get_id_str: function(model, field, tag_name, opts) {
-      var id = "";
-      if (_.include(_.keys(opts), 'id')) {
-        id = opts['id'];
-        delete opts['id'];
-      } else {
-        id = (tag_name == 'label') ? field + '_label' : field;
-      }
-      return 'id="' + id + '" ';
-    },
-
-    // wrap tag in field-with-error span if errors present
-    wrap_errors: function(model, field, tag_str, tag_name) {
-      if (model.get('errors') != undefined && model.get('errors')[field] != undefined) {
-        var e = model.get('errors');
-        var x = e[field];
-        if (tag_name != 'label') {
-          // if not label tag, show error message
-          return '<span class="field-with-error">' + tag_str + '&nbsp;<span class="field-error-message">' + model.get('errors')[field] + '</span></span>'; 
-        } else {
-          return '<span class="field-with-error">' + tag_str + '</span>'; 
-        }
-      } else {
-        return tag_str;
-      }
-    },
-
-    // A function that calls its second argument (form\_body\_fn), 
+    // A function that calls its second argument (`form_body_fn`), 
     // with an object that has current context (including current model)
     // The tag functions will be called on this object.
     form: function(model, form_body_fn) {
@@ -98,16 +37,9 @@
       form_body_fn(form_obj);
     },
 
-    tag: function(tag_name, field, opts, tag_open, body_str, tag_end) {
-      opts = _.isUndefined(opts) ? {} : opts;
-      var val_str = this.get_val_str(this.model, field, tag_name, opts);
-      var id_str = this.get_id_str(this.model, field, tag_name, opts);
-      var name_str = this.get_name_str(this.model, field, tag_name, opts);
-      var opts_str = this.get_opt_str(opts);
-      var tag_str = tag_open + val_str + name_str + id_str + opts_str + '>' + body_str + tag_end;
-      return this.wrap_errors(this.model, field, tag_str, tag_name);
-    },
 
+    // ##Functions that are used to render HTML tags##
+   
     // input type="text"
     text: function(field, opts) {
       var tag_open = '<input type="text" ';
@@ -116,7 +48,7 @@
       return this.tag('text', field, opts, tag_open, body_str, tag_end);
     },
 
-    //input type="date"
+    // input type="date"
     date: function(field, opts) {
       var tag_open = '<input type="date" ';
       var body_str = '';
@@ -170,17 +102,22 @@
       return this.tag('checkbox', field, opts, tag_open, body_str, tag_end);
     },
 
-    // options for select tag
-    generate_options_array: function(collection, name_attr, value_attr, include_none) {
-      options = [];
-      if (!_.isUndefined(include_none) && include_none == true) {
-        options.push({name: '(none)', value: ""});
-      }
-      collection.each(function(o) {
-        options.push({name: o.escape(name_attr), value: o.escape(value_attr)});
-      });
-      return options;
+    // A function that is called from the above functions to combine parts of the tag and 
+    // produce the tag. 
+    tag: function(tag_name, field, opts, tag_open, body_str, tag_end) {
+      opts = _.isUndefined(opts) ? {} : opts;
+      // get the value, name, id, and options parts of the tag
+      var val_str = this.get_val_str(this.model, field, tag_name, opts);
+      var id_str = this.get_id_str(this.model, field, tag_name, opts);
+      var name_str = this.get_name_str(this.model, field, tag_name, opts);
+      var opts_str = this.get_opt_str(opts);
+      // combine the tag open and end with the above parts to create the tag.
+      var tag_str = tag_open + val_str + name_str + id_str + opts_str + '>' + body_str + tag_end;
+      // pass the tag to `wrap_errors` that adds error span if the errors hash contains
+      // an error for this field.
+      return this.wrap_errors(this.model, field, tag_str, tag_name);
     },
+
 
     // select tag
     select: function(field, options_array, opts) {
@@ -212,7 +149,84 @@
         tag += '&nbsp;&nbsp;';
       });
       return tag;
-    }
+    },
+   
+    // ## Utility functions ##
+    
+    // function that generates an array of option hashes.
+    // each hash has name and value keys.
+    generate_options_array: function(collection, name_attr, value_attr, include_none) {
+      options = [];
+      if (!_.isUndefined(include_none) && include_none == true) {
+        options.push({name: '(none)', value: ""});
+      }
+      collection.each(function(o) {
+        options.push({name: o.escape(name_attr), value: o.escape(value_attr)});
+      });
+      return options;
+    },
+
+    // Combine options into a string of the form 'key = value'
+    get_opt_str: function(opts) {
+      if (opts != undefined) {
+        var opt_str = _.reduce(_.keys(opts), function(s, k) {
+          return s + k + '="' + opts[k] + '" ';
+        }, '');
+        return opt_str;
+      }
+    },
+
+    // Create value part of tag string (value = "<value>")
+    get_val_str: function(model, field, tag_name, opts) {
+      value = ""
+      if (_.include(_.keys(opts), 'value')) {
+        value = opts['value'];
+        delete opts['value'];
+      } else {
+        if (tag_name != 'textarea') {
+          value = model.escape(field);
+        }
+      }
+      return 'value="' + value + '" ';
+    },
+
+    get_name_str: function(model, field, tag_name, opts) {
+      var name = "";
+      if (_.include(_.keys(opts), 'name')) {
+        name = opts['name'];
+        delete opts['name'];
+      } else {
+        name = (tag_name == 'label') ? field + '_label' : field;
+      }
+      return 'name="' + name + '" ';
+    },
+
+    get_id_str: function(model, field, tag_name, opts) {
+      var id = "";
+      if (_.include(_.keys(opts), 'id')) {
+        id = opts['id'];
+        delete opts['id'];
+      } else {
+        id = (tag_name == 'label') ? field + '_label' : field;
+      }
+      return 'id="' + id + '" ';
+    },
+
+    // wrap tag in field-with-error span if errors present
+    wrap_errors: function(model, field, tag_str, tag_name) {
+      if (model.get('errors') != undefined && model.get('errors')[field] != undefined) {
+        var e = model.get('errors');
+        var x = e[field];
+        if (tag_name != 'label') {
+          // if not label tag, show error message
+          return '<span class="field-with-error">' + tag_str + '&nbsp;<span class="field-error-message">' + model.get('errors')[field] + '</span></span>'; 
+        } else {
+          return '<span class="field-with-error">' + tag_str + '</span>'; 
+        }
+      } else {
+        return tag_str;
+      }
+    },
 
   };
   this.BackboneFormHelper = helper;
