@@ -63,7 +63,17 @@
       }
     },
 
+    // A function that calls its second argument (form\_body\_fn), 
+    // with an object that has current context (including current model)
+    // The tag functions will be called on this object.
     form: function(model, form_body_fn) {
+      // Use a blank model if the passed in one is null.
+      if (_.isUndefined(model) || _.isNull(model)) {
+        model = new Backbone.Model();
+      }
+
+      // Create an object with the model and helper functions, which will
+      // be the '**this**' reference within the tag functions. 
       var form_obj = {
         model: model,
         get_opt_str: helper.get_opt_str,
@@ -83,6 +93,8 @@
         select: helper.select,
         radio: helper.radio,
       };
+
+      // Call the function passing in the above object.
       form_body_fn(form_obj);
     },
 
@@ -126,7 +138,7 @@
       var tag_open = '<textarea ';
       var body_str = this.model.escape(field);
       var tag_end = '</textarea>';
-      return this.tag('textarea', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
+      return this.tag('textarea', field, opts, prefix, tag_open, body_str, tag_end);
     },
 
     // input type="hidden"
@@ -134,7 +146,7 @@
       var tag_open = '<input type="hidden" ';
       var body_str = '';
       var tag_end = '';
-      return this.tag('hidden', field, opts, prefix, tag_open, body_str, tag_end).tag_string();
+      return this.tag('hidden', field, opts, prefix, tag_open, body_str, tag_end);
     },
 
     // input type="password"

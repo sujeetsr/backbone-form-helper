@@ -15,10 +15,17 @@
   
   <body>
 
-    <!-- Contact Template -->
+    <!-- 
+    Contact Template.
+    The template would normally be in a jst file in a rails application 
+    but is defined here since this is a standalone html page.
+    The load_templates() function is used to load this into an underscore 
+    template.
+    -->
     <script id="contact_template" type="text/html">
       <% BackboneFormHelper.form(contact, function(f) { %>
         <table>
+          <!-- Labels and Textfields -->
           <tr>
             <td><%= f.label('first_name', 'First Name') %> </td>
             <td><%= f.text('first_name', {placeholder: 'First Name'}) %></td>
@@ -27,11 +34,17 @@
             <td><%= f.label('last_name', 'Last Name') %> </td>
             <td><%= f.text('last_name', {placeholder: 'Last Name'}) %></td>
           </tr>
+          <!-- Textarea -->
+          <tr>
+            <td><%= f.label('about', 'About') %> </td>
+            <td><%= f.textarea('about', {placeholder: 'About'}) %></td>
+          </tr>
           <!-- A field with an error -->
           <tr>
             <td><%= f.label('email', 'Email') %> </td>
             <td><%= f.text('email', {placeholder: 'Email'}) %></td>
           </tr>
+          <tr><td><h3>Address</h3></td><td></td></tr>
           <tr>
             <td><%= f.label('street_1', 'Street Address 1') %> </td>
             <td><%= f.text('street_1', {placeholder: 'Street Address 1'}) %></td>
@@ -56,15 +69,19 @@
             <td><%= f.label('is_admin', 'Administrator') %> </td>
             <td><%= f.checkbox('is_admin') %></td>
           </tr>
+          <tr>
+            <td></td>
+            <td><%= f.hidden('id') %></td>
+          </tr>
         </table>
       <% }) %>
     </script>
 
-    <!-- content -->
+    <!-- main page content -->
     <div id="content">
       <h3>Contact form</h3>
-      <div id="contact-form-container">
-        <form id="ok-contact-form"> </form>
+      <div id="container">
+        <form id="contact-form"> </form>
       </div>
     </div>
 
