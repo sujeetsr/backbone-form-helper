@@ -1,18 +1,18 @@
 (function() {
   var helper = {
-    
 
-    // A function that calls its second argument (`form_body_fn`), 
-    // with an object that has current context (including current model)
+    // The `form` function calls its second argument (`form_body_fn`), 
+    // with an object that contains the model.
     // The tag functions will be called on this object.
     form: function(model, form_body_fn) {
-      // Use a blank model if the passed in one is null.
+      // Use a blank model if the one passed in is null.
       if (_.isUndefined(model) || _.isNull(model)) {
         model = new Backbone.Model();
       }
 
-      // Create an object with the model and helper functions, which will
-      // be the `this` reference within the tag functions. 
+      // Create an object with the model and the helper functions, 
+      // The tag functions are called on this object.
+      // This object is the `this` reference within the tag functions. 
       var form_obj = {
         model: model,
         get_opt_str: helper.get_opt_str,
@@ -39,7 +39,15 @@
 
 
     // ##Functions that are used to render HTML tags##
-   
+  
+    begin: function(opts) {
+      var tag_open = '<form ';
+      var body_str = '';
+      var tag_end = '';
+      return this.tag('text', field, opts, tag_open, body_str, tag_end);
+
+    },
+
     // input type="text"
     text: function(field, opts) {
       var tag_open = '<input type="text" ';
@@ -118,7 +126,6 @@
       return this.wrap_errors(this.model, field, tag_str, tag_name);
     },
 
-
     // select tag
     select: function(field, options_array, opts) {
       tag = '<select name="' + field + '"> ';
@@ -153,12 +160,23 @@
    
     // ## Utility functions ##
     
-    // function that generates an array of option hashes.
-    // each hash has name and value keys.
-    generate_options_array: function(collection, name_attr, value_attr, include_none) {
+    // A function that generates an array of option hashes.
+    // Each hash has name and value keys, whose values are obtained from the
+    // `name_attr` and `value_attr` attributes of each model of the 
+    // input `collection`.
+    // `include_none` is a boolean attribute that if true, generates a 
+    // `none` option for the option array. The name for the `none` option
+    // is taken from `opts.none` if present, and is "(none)" otherwise
+    generate_options_array: function(collection, name_attr, value_attr, include_none, opts) {
       options = [];
+       
       if (!_.isUndefined(include_none) && include_none == true) {
-        options.push({name: '(none)', value: ""});
+        none_opt = opts.none;
+        if (!_.isUndefined(none_opt) && !_.isNull(none_opt)) {
+          options.push({name: none_opt, value: ''});
+        } else {
+          options.push({name: '(none)', value: ""});
+        }
       }
       collection.each(function(o) {
         options.push({name: o.escape(name_attr), value: o.escape(value_attr)});
@@ -166,7 +184,7 @@
       return options;
     },
 
-    // Combine options into a string of the form 'key = value'
+    // A function that combine the keys and values in the options hash into a string of the form `key1 = "value1" key2="value2"`
     get_opt_str: function(opts) {
       if (opts != undefined) {
         var opt_str = _.reduce(_.keys(opts), function(s, k) {
@@ -176,7 +194,10 @@
       }
     },
 
-    // Create value part of tag string (value = "<value>")
+    // A function that creates the value part of the html tag (for example 
+    // value = "Bob"
+    // The value is the value of the `field` attribute of the input model. 
+    // This can be overriden by passing in a `value` option in opts.
     get_val_str: function(model, field, tag_name, opts) {
       value = ""
       if (_.include(_.keys(opts), 'value')) {
@@ -190,6 +211,10 @@
       return 'value="' + value + '" ';
     },
 
+    // A function that creates the name part of the html tag.
+    // The name value is the value of the `field` attribute of the input model. 
+    // (For a label, '_label' is appended to the above value).
+    // The value can be overriden by passing in a `name` option in opts.
     get_name_str: function(model, field, tag_name, opts) {
       var name = "";
       if (_.include(_.keys(opts), 'name')) {
