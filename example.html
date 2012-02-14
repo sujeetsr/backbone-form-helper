@@ -8,7 +8,7 @@
     <!-- form helper -->
     <script src="js/backbone-form-helper.js"></script>
     <!-- load models and views -->
-    <script src="js/example.js"></script>
+    <script src="js/page.js"></script>
     <!-- styles -->
     <link rel="stylesheet" href="css/style.css">
   </head>
@@ -23,11 +23,13 @@
     template.
     -->
     <script id="contact_template" type="text/html">
+      <!-- Initialize the form helper with the model whose fields are to be displayed -->
       <% BackboneFormHelper.form(contact, function(f) { %>
         <table>
-          <!-- Labels and Textfields -->
           <tr>
+            <!-- A label -->
             <td><%= f.label('first_name', 'First Name') %> </td>
+            <!-- A textfield -->
             <td><%= f.text('first_name', {placeholder: 'First Name'}) %></td>
           </tr>
           <tr>
@@ -37,6 +39,7 @@
           <!-- Textarea -->
           <tr>
             <td><%= f.label('about', 'About') %> </td>
+            <!-- A textarea -->
             <td><%= f.textarea('about', {placeholder: 'About'}) %></td>
           </tr>
           <!-- A field with an error -->
@@ -67,6 +70,7 @@
           </tr>
           <tr>
             <td><%= f.label('is_admin', 'Administrator') %> </td>
+            <!-- A checkbox -->
             <td><%= f.checkbox('is_admin') %></td>
           </tr>
           <tr>
