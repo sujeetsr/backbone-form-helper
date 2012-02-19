@@ -1,6 +1,6 @@
 ##Backbone Form Helper##
 
-A library to render html form fields using backbone, similar to Rails form helpers.  
+A library to render html form fields using backbone.js, similar to Rails form helpers.  
 Given a Backbone model `contact`, form fields can be generated within underscore templates like this:  
 
         <% BackboneFormHelper.form(contact, function(f) { %>
