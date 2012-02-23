@@ -25,6 +25,7 @@
     <script id="contact_template" type="text/html">
       <!-- Initialize the form helper with the model whose fields are to be displayed -->
       <% BackboneFormHelper.form(contact, function(f) { %>
+        <%= f.begin({name: 'contact_form'}) %>
         <table>
           <tr>
             <!-- A label -->
@@ -78,14 +79,14 @@
             <td><%= f.hidden('id') %></td>
           </tr>
         </table>
+        <%= f.end() %>
       <% }) %>
     </script>
 
     <!-- main page content -->
     <div id="content">
       <h3>Contact form</h3>
-      <div id="container">
-        <form id="contact-form"> </form>
+      <div id="form-container">
       </div>
     </div>
 

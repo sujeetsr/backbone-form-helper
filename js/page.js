@@ -68,7 +68,7 @@ $(document).ready(function() {
   var view = new ContactView({model: new Contact(data)});
   
   // render the contact
-  $('#contact-form').append(view.render().el);
+  $('#form-container').append(view.render().el);
 
 });
 
