@@ -25,7 +25,7 @@
     <script id="contact_template" type="text/html">
       <!-- Initialize the form helper with the model whose fields are to be displayed -->
       <% BackboneFormHelper.form(contact, function(f) { %>
-        <%= f.begin({name: 'contact_form', id: 'contact_form', error_placement: 'top' }) %>
+        <%= f.begin({name: 'contact_form', id: 'contact_form', error_position: 'field' }) %>
         <%= f.print_errors() %>
         <table>
           <tr>
@@ -67,8 +67,12 @@
             <td><%= f.text('state', {placeholder: 'State'}) %></td>
           </tr>
           <tr>
+            <td><%= f.label('country', 'Country') %> </td>
+            <td><%= f.select('country', countries) %></td>
+          </tr>
+          <tr>
             <td><%= f.label('zip', 'Zip') %> </td>
-            <td><%= f.text('zip', {placeholder: 'Zip'}) %></td>
+            <td><%= f.text('zip', {placeholder: 'Country'}) %></td>
           </tr>
           <tr>
             <td><%= f.label('is_admin', 'Administrator') %> </td>

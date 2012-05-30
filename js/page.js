@@ -83,12 +83,18 @@ var data = {
   street_2: 'Apt 456',
   city: 'San Francisco',
   state: 'California',
+  country: 'US',
   zip: '94111',
   is_admin: true,
   // errors hash that contains an error for the email field
   errors: { 'email': 'An account with this email address already exists' } 
 }; 
 
+var countries = [
+  {name: 'United States', value: 'US'},
+  {name: 'Canada', value: 'CA'},
+  {name: 'Mexico', value: 'MX'}
+];
 // ###Render the view###
 // On document load, render the view.
 $(document).ready(function() {

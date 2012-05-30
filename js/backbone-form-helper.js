@@ -19,7 +19,7 @@
         // ##Functions that are used to render HTML tags##
         // form open
         begin: function(opts) {
-          this.error_placement = opts['error_placement'];
+          this.error_position = opts['error_position'];
           return '<form name="' + opts['name'] + '" id="' + opts['id'] + '">';
         },
         // form end
@@ -99,9 +99,10 @@
         // select tag
         select: function(field, options_array, opts) {
           tag = '<select name="' + field + '"> ';
+          var _this = this;
           _.each(options_array, function(o) {
             tag += '<option value="' + o.value + '" ';
-            if (this.model.get(field) == o.value) {
+            if (_this.model.get(field) == o.value) {
               tag += 'selected = "selected"';
             }
             tag += '>' + o.name + '</option>';
@@ -209,7 +210,7 @@
           if (model.get('errors') != undefined && model.get('errors')[field] != undefined) {
             var e = model.get('errors');
             var x = e[field];
-            if (tag_name != 'label' && this.error_placement == 'field') {
+            if (tag_name != 'label' && this.error_position == 'field') {
               // if not label tag, show error message
               return '<span class="field-with-error">' + tag_str + '&nbsp;<span class="field-error-message">' + model.get('errors')[field] + '</span></span>'; 
             } else {
@@ -221,7 +222,7 @@
         },
         
         print_errors: function() {
-          if (this.error_placement == 'top') {
+          if (this.error_position == 'top') {
             var errors = this.model.get('errors');
             var attrs = this.model.toJSON();
             var s = '';
