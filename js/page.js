@@ -19,11 +19,28 @@ function load_templates() {
 // ###We now define a Backbone model and a view.###
 
 // ####Contact model####
-var Contact = Backbone.Model.extend();
+var Contact = Backbone.Model.extend({
+  validate: function(attrs) {
+    console.log('in validate');
+    console.log(attrs);
+    if (_.isUndefined(attrs.errors)) {
+      attrs.errors = {}; 
+    }
+    if (_.isEmpty(attrs.first_name)) {
+      attrs.errors[first_name] = "first_name cant be blank";
+      return "first_name cant be blank";
+    }
+  }
+
+});
 
 // ####Contact view####
 var ContactView = Backbone.View.extend({
   tagName: 'div',
+  events: {
+    'click #submit_contact_form': 'save'
+  },
+
   initialize: function() {
     // Set the template for this view.  
     // The template is available in the `templates` variable. In a Rails application,
@@ -32,9 +49,24 @@ var ContactView = Backbone.View.extend({
   },
   render: function() {
     // render the template with the model passed in during view creation.
+    $(this.el).empty();
     $(this.el).append(this.template({contact: this.model}));
     return this;
+  },
+  save: function(event) {
+    event.preventDefault();
+    console.log('save called');
+    attrs = $('#contact_form').getJSON();
+    console.log(attrs);
+    this.model.save(attrs, {
+      error: function(model, error) {
+        console.log('validation error!!!');
+      }
+    });
+    this.render();
+
   }
+
 });
 
 // ###Data###

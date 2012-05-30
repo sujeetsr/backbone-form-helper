@@ -19,6 +19,7 @@
         // ##Functions that are used to render HTML tags##
         // form open
         begin: function(opts) {
+          this.error_placement = opts['error_placement'];
           return '<form name="' + opts['name'] + '" id="' + opts['id'] + '">';
         },
         // form end
@@ -208,7 +209,7 @@
           if (model.get('errors') != undefined && model.get('errors')[field] != undefined) {
             var e = model.get('errors');
             var x = e[field];
-            if (tag_name != 'label') {
+            if (tag_name != 'label' && this.error_placement == 'field') {
               // if not label tag, show error message
               return '<span class="field-with-error">' + tag_str + '&nbsp;<span class="field-error-message">' + model.get('errors')[field] + '</span></span>'; 
             } else {
@@ -218,7 +219,27 @@
             return tag_str;
           }
         },
-
+        
+        print_errors: function() {
+          if (this.error_placement == 'top') {
+            var errors = this.model.get('errors');
+            var attrs = this.model.toJSON();
+            var s = '';
+            var err_str = _.reduce(_.keys(attrs), function(s, attr) {
+              var tmp = ''
+              if (errors[attr] != undefined) {
+                tmp = s + '<span class="field-error-message">' + 
+                  errors[attr] + '</span>';
+              } else {
+                tmp = s;
+              }
+              return tmp;
+            }, s);
+            return err_str;
+          } else {
+            return '';
+          }
+        }
       };
 
       // Call the function passing in the above object.

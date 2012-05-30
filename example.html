@@ -2,7 +2,7 @@
   
   <head>
     <!-- load libs -->
-    <script src="lib/jquery-1.6.4.js"></script>
+    <script src="lib/jquery-1.7.1.min.js"></script>
     <script src="lib/underscore.js"></script>
     <script src="lib/backbone-0.5.3.js"></script>
     <!-- form helper -->
@@ -25,7 +25,8 @@
     <script id="contact_template" type="text/html">
       <!-- Initialize the form helper with the model whose fields are to be displayed -->
       <% BackboneFormHelper.form(contact, function(f) { %>
-        <%= f.begin({name: 'contact_form'}) %>
+        <%= f.begin({name: 'contact_form', id: 'contact_form', error_placement: 'top' }) %>
+        <%= f.print_errors() %>
         <table>
           <tr>
             <!-- A label -->
@@ -78,6 +79,7 @@
             <td></td>
             <td><%= f.hidden('id') %></td>
           </tr>
+          <tr><td><input type="submit" value="Submit" id="submit_contact_form"></td></tr>
         </table>
         <%= f.end() %>
       <% }) %>
