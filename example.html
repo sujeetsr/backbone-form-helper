@@ -25,7 +25,7 @@
     <script id="contact_template" type="text/html">
       <!-- Initialize the form helper with the model whose fields are to be displayed -->
       <% BackboneFormHelper.form(contact, function(f) { %>
-        <%= f.begin({name: 'contact_form', id: 'contact_form', error_position: 'field' }) %>
+        <%= f.begin({name: 'contact_form', id: 'contact_form' }) %>
         <%= f.print_errors() %>
         <table>
           <tr>

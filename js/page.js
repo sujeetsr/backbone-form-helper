@@ -80,14 +80,17 @@ var data = {
   email: 'jsmith@example.com',
   about: 'a description for this user account',
   street_1: '123 California Way',
-  street_2: 'Apt 456',
+  street_2: '',
   city: 'San Francisco',
   state: 'California',
   country: 'US',
   zip: '94111',
   is_admin: true,
   // errors hash that contains an error for the email field
-  errors: { 'email': 'An account with this email address already exists' } 
+  errors: { 
+    'email': 'An account with this email address already exists',
+    'street_2': 'Street 2 cannot be empty'
+  } 
 }; 
 
 var countries = [
@@ -95,6 +98,31 @@ var countries = [
   {name: 'Canada', value: 'CA'},
   {name: 'Mexico', value: 'MX'}
 ];
+
+my_err_fn = function(model) {
+  var errors = model.get('errors');
+  var attrs = model.toJSON();
+  var s = '<h3 class="field-error-message">Errors found!</h3>';
+  s += '<ol>';
+  var err_str = _.reduce(_.keys(attrs), function(s, attr) {
+    var tmp = ''
+    if (!_.isUndefined(errors[attr])) {
+      tmp = s + '<li class="field-error-message">' + 
+        errors[attr] + '</li>';
+    } else {
+      tmp = s;
+    }
+    return tmp;
+  }, s);
+  s += '</ol>';
+  return err_str;
+}
+
+BackboneFormHelper.init({
+  error_position: 'top', 
+  error_fn_top: my_err_fn,
+  error_field_class: 'field-with-error'
+});
 // ###Render the view###
 // On document load, render the view.
 $(document).ready(function() {
