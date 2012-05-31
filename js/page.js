@@ -19,20 +19,7 @@ function load_templates() {
 // ###We now define a Backbone model and a view.###
 
 // ####Contact model####
-var Contact = Backbone.Model.extend({
-  validate: function(attrs) {
-    console.log('in validate');
-    console.log(attrs);
-    if (_.isUndefined(attrs.errors)) {
-      attrs.errors = {}; 
-    }
-    if (_.isEmpty(attrs.first_name)) {
-      attrs.errors[first_name] = "first_name cant be blank";
-      return "first_name cant be blank";
-    }
-  }
-
-});
+var Contact = Backbone.Model.extend({ });
 
 // ####Contact view####
 var ContactView = Backbone.View.extend({
@@ -53,18 +40,10 @@ var ContactView = Backbone.View.extend({
     $(this.el).append(this.template({contact: this.model}));
     return this;
   },
+  // empty save function.
   save: function(event) {
     event.preventDefault();
     console.log('save called');
-    attrs = $('#contact_form').getJSON();
-    console.log(attrs);
-    this.model.save(attrs, {
-      error: function(model, error) {
-        console.log('validation error!!!');
-      }
-    });
-    this.render();
-
   }
 
 });
@@ -119,9 +98,9 @@ my_err_fn = function(model) {
 }
 
 BackboneFormHelper.init({
-  error_position: 'top', 
-  error_fn_top: my_err_fn,
-  error_field_class: 'field-with-error'
+  errorPlacement: 'top', 
+  errorFnTop: my_err_fn,
+  errorClass: 'field-with-error'
 });
 // ###Render the view###
 // On document load, render the view.
