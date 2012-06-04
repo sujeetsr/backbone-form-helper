@@ -100,7 +100,9 @@ my_err_fn = function(model) {
 BackboneFormHelper.init({
   errorPlacement: 'top', 
   errorFnTop: my_err_fn,
-  errorClass: 'field-with-error'
+  errorFieldClass: 'field-with-error',
+  errorLabelClass: 'field-error-message',
+  wrapper: '<li>'
 });
 // ###Render the view###
 // On document load, render the view.

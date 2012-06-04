@@ -2,9 +2,30 @@
   var helper = {
     
     init: function(opts) {
+      // Error placement: can be 'top' or 'field'.
+      // If placement is 'top', f.errorMessages must be called 
+      // in the template to print error messages.
       this.errorPlacement = opts['errorPlacement'];
-      this.errorFnTop = opts['errorFnTop'];
-      this.errorClass = opts['errorClass'];
+      // The wrapper element that is used to wrap each error message
+      // if the placement is 'top'.
+      // To get a list of error messages, the wrapper should be
+      // &lt;li&gt;, and the error\_messages can be called inside a ul or ol
+      // like this:
+      //
+      // &lt;ul&gt;
+      //     <%= f.error_messages %>
+      // &lt;/ul&gt;
+     
+      this.wrapper = opts['wrapper'];
+      // The element that is used to create error messages.
+      // default is 'label'
+      this.errorElement = opts['errorElement'];
+      // The error class that should be added to each input field with 
+      // an error. Default is 'error'
+      this.errorFieldClass = opts['errorFieldClass'];
+      // The error class that should be added to each input field label 
+      // with an error. Default is 'error'
+      this.errorLabelClass = opts['errorLabelClass'];
     },
 
     // The `form` function calls its second argument (`formBodyFn`), 
@@ -253,6 +274,24 @@
           }
           return 'id="' + id + '" ';
         },
+        
+        // prints error messages 
+        errorMessages: function() {
+          if (BackboneFormHelper.errorPlacement == 'top') {
+            var s = '';
+            var attrs = this.model.toJSON();
+            var _this = this;
+            var errStr = _.reduce(
+              _.keys(attrs), _this.makeErrMsgFromAttr, s, _this
+            );
+            return errStr;
+          } else {
+            return '';
+          }
+        },
+
+        // Internal helper functions - not meant to be called directly.
+        
         // wrap tag in field-with-error span if errors present
         wrapErrors: function(model, field, tagStr, tagName) {
           if (model.get('errors') != undefined && 
@@ -262,41 +301,54 @@
             if (tagName != 'label' && 
             BackboneFormHelper.errorPlacement == 'field') {
               // if not label tag, show error message
-              return '<span class="' + BackboneFormHelper.errorClass + '">' + tagStr + '&nbsp;<span class="field-error-message">' + model.get('errors')[field] + '</span></span>'; 
+              return '<span class="' + 
+                BackboneFormHelper.errorFieldClass + '">' + tagStr + 
+                '&nbsp;<span class="field-error-message">' + 
+                model.get('errors')[field] + '</span></span>'; 
             } else {
-              return '<span class="' + BackboneFormHelper.errorClass + '">' + tagStr + '</span>'; 
+              return '<span class="' + BackboneFormHelper.errorFieldClass + 
+                '">' + tagStr + '</span>'; 
             }
           } else {
             return tagStr;
           }
         },
-        
-        printErrors: function() {
-          if (BackboneFormHelper.errorPlacement == 'top') {
-            if (_.isFunction(BackboneFormHelper.errorFnTop)) {
-              return BackboneFormHelper.errorFnTop(model);
+       
+        // creates the error message for an attribute
+        makeErrMsgFromAttr: function(s, attr) {
+          var errors = this.model.get('errors');
+          var attrs = this.model.toJSON();
+          var tmp = ''
+          // if errors contain error for attr, generate error message
+          // for attr.
+          if (errors[attr] != undefined) {
+            // if wrapper is defined, put error message for attr 
+            // in wrapper.
+            if (!_.isUndefined(BackboneFormHelper.wrapper)) {
+              var errElem = $(BackboneFormHelper.wrapper);
+              errElem.html(
+                '<span class="' + 
+                  BackboneFormHelper.errorLabelClass + '">' + 
+                  errors[attr] + '</span><br>'
+              );
+              tmp = s + errElem.html();
             } else {
-              var errors = this.model.get('errors');
-              var attrs = this.model.toJSON();
-              var s = '';
-              var errStr = _.reduce(_.keys(attrs), function(s, attr) {
-                var tmp = ''
-                if (errors[attr] != undefined) {
-                  tmp = s + '<span class="field-error-message">' + 
-                    errors[attr] + '</span><br>';
-                } else {
-                  tmp = s;
-                }
-                return tmp;
-              }, s);
-              return errStr;
+              // no wrapper, append error message for attr directly 
+              // to string.
+              tmp = s + '<span class="' + 
+                BackboneFormHelper.errorLabelClass + '">' + 
+                errors[attr] + '</span>'
             }
           } else {
-            return '';
+            // no error for attr, return original string
+            tmp = s;
           }
-        }
-      };
+          return tmp;
+        },
+      
+      }; // end form object.
 
+      
       // Call the function passing in the above object.
       formBodyFn(formObj);
     },
