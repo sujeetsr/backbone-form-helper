@@ -9,13 +9,12 @@
       // The wrapper element that is used to wrap each error message
       // if the placement is 'top'.
       // To get a list of error messages, the wrapper should be
-      // &lt;li&gt;, and the error\_messages can be called inside a ul or ol
-      // like this:
+      // &lt;li&gt;, and the error\_messages can be called inside 
+      // a ul or ol like this:
       //
       // &lt;ul&gt;
       //     <%= f.error_messages %>
       // &lt;/ul&gt;
-     
       this.wrapper = opts['wrapper'];
       // The element that is used to create error messages.
       // default is 'label'
@@ -26,6 +25,8 @@
       // The error class that should be added to each input field label 
       // with an error. Default is 'error'
       this.errorLabelClass = opts['errorLabelClass'];
+      this.errorFn = opts['errorFn'];
+      this.tagBuilderWrapper = $('<div>');
     },
 
     // The `form` function calls its second argument (`formBodyFn`), 
@@ -57,95 +58,65 @@
           return '</form>';
         },
         
-        // input type="text"
         text: function(field, opts) {
-          var tagOpen = '<input type="text" ';
-          var bodyStr = '';
-          var tagEnd = '';
-          return this.tag('text', field, opts, tagOpen, 
-          bodyStr, tagEnd);
+          return this.tagBuilder(
+            $('<input>').attr({type: 'text'}), 'text', field, opts
+          );
         },
 
         // input type="date"
         date: function(field, opts) {
-          var tagOpen = '<input type="date" ';
-          var bodyStr = '';
-          var tagEnd = '';
-          return this.tag('date', field, opts, tagOpen, 
-          bodyStr, tagEnd);
+          return this.tagBuilder(
+            $('<input>').attr({type: 'date'}), 'text', field, opts
+          );
         },
 
         // label
-        label: function(field, labelText, opts) {
-          var tagOpen = '<label for="' + field +  '" ';
-          var bodyStr = labelText;
-          var tagEnd = '</label>';
-          return this.tag('label', field, opts, tagOpen, 
-          bodyStr, tagEnd);
+        label: function(field, opts) {
+          if (_.include(_.keys(opts), 'value')) {
+            opts['body'] = opts['value'];
+            delete opts['value'];
+          }
+          return this.tagBuilder(
+            $('<label>').attr({'for': field}), 'label', field, opts
+          );
         },
 
         // textarea
-        textarea: function(field, text, opts) {
-          opts = _.isUndefined(opts) ? {} : opts;
-          var tagOpen = '<textarea ';
-          var bodyStr = this.model.escape(field);
-          var tagEnd = '</textarea>';
-          return this.tag('textarea', field, opts, tagOpen, 
-          bodyStr, tagEnd);
+        textarea: function(field, opts) {
+          // set the body from either opts value or model field value.
+          if (_.include(_.keys(opts), 'value')) {
+            opts['body'] = opts['value'];
+            delete opts['value'];
+          } else {
+            opts['body'] = model.escape(field);
+          }
+          return this.tagBuilder(
+            $('<textarea>'), 'textarea', field, opts
+          );
         },
 
         // input type="hidden"
         hidden: function(field, opts) {
-          var tagOpen = '<input type="hidden" ';
-          var bodyStr = '';
-          var tagEnd = '';
-          return this.tag('hidden', field, opts, tagOpen, 
-          bodyStr, tagEnd);
+          return this.tagBuilder(
+            $('<input>').attr({type: 'hidden'}), 'hidden', field, opts
+          );
         },
         
         // input type="password"
         password: function(field, opts) {
-          var tagOpen = '<input type="password" ';
-          var bodyStr = '';
-          var tagEnd = '';
-          return this.tag('password', field, opts, tagOpen, 
-          bodyStr, tagEnd);
+          return this.tagBuilder(
+            $('<input>').attr({type: 'password'}), 'password', field, opts
+          );
         },
 
         // input type="checkbox"
         checkbox: function(field, opts) {
-          var tagOpen = '<input type="checkbox" ';
-          var checked = '';
+          var tag = $('<input>').attr({type: 'checkbox'});
           if (this.model.get(field) == true) {
-            checked = 'checked="true" ';
+            tag.attr({checked: 'true'});
           }
-          tagOpen += checked;
-          var bodyStr = '';
-          var tagEnd = '';
-          return this.tag('checkbox', field, opts, tagOpen, 
-          bodyStr, tagEnd);
-        },
-
-        // Generic tag function to generate tag id, value, name, 
-        // and options. 
-        tag: function(tagName, field, opts, tagOpen, 
-        bodyStr, tagEnd) {
-          opts = _.isUndefined(opts) ? {} : opts;
-          // get the value, name, id, and options parts of the tag
-          var valStr = this.getValStr(this.model, field, tagName, 
-          opts);
-          var idStr = this.getIdStr(this.model, field, tagName, 
-          opts);
-          var nameStr = this.getNameStr(this.model, field, tagName, 
-          opts);
-          var optsStr = this.getOptsStr(opts);
-          // combine the tag open and end with the above parts 
-          // to create the tag.
-          var tagStr = tagOpen + valStr + nameStr + idStr + 
-            optsStr + '>' + bodyStr + tagEnd;
-          // pass the tag to `wrapErrors` that adds error span if 
-          // the errors hash contains an error for this field.
-          return this.wrapErrors(this.model, field, tagStr, tagName);
+          return this.tagBuilder(tag, 'checkbox', field, opts);
         },
 
         // select tag
@@ -183,54 +154,38 @@
           return tag;
         },
 
+
+        tagBuilder: function(tag, tagName, field, opts) {
+          opts = _.isUndefined(opts) ? {} : opts;
+          // set name, value and id.
+          tag.attr({
+            name: this.getName(this.model, field, tagName, opts),
+            value: this.getValue(this.model, field, tagName, opts),
+            id: this.getId(this.model, field, tagName, opts),
+          });  
+          // set body from opts.
+          if (_.include(_.keys(opts), 'body')) {
+            if (!_.isNull(opts['body'])) {
+              tag.append(opts['body']);
+            }
+            delete opts['body'];
+          }
+          // set additional options.
+          tag.attr(opts);
+          tag = this.highlightErrors(tag, tagName, field);
+          return BackboneFormHelper.tagBuilderWrapper.html(tag).html();
+        },
+
+
         // ## Utility functions ##
 
-        // A function that generates an array of option hashes.
-        // Each hash has name and value keys, whose values are 
-        // obtained from the `nameAttr` and `nameAttr` attributes 
-        // of each model of the input `collection`.
-        // `include_none` is a boolean attribute that if true, 
-        // generates a `none` option for the option array. 
-        // The name for the `none` option is taken from `opts.none` 
-        // if present, and is "(none)" otherwise
-        generateOptionsArray: function(collection, name_attr, 
-        value_attr, include_none, opts) {
-          options = [];
-
-          if (!_.isUndefined(include_none) && include_none == true) {
-            none_opt = opts.none;
-            if (!_.isUndefined(none_opt) && !_.isNull(none_opt)) {
-              options.push({name: none_opt, value: ''});
-            } else {
-              options.push({name: '(none)', value: ""});
-            }
-          }
-          collection.each(function(o) {
-            options.push({name: o.escape(nameAttr), 
-              value: o.escape(valueAttr)});
-          });
-          return options;
-        },
-        
-        // A function that combine the keys and values in the 
-        // options hash into a string of the form 
-        // `key1 = "value1" key2="value2"`
-        getOptsStr: function(opts) {
-          if (opts != undefined) {
-            var optsStr = _.reduce(_.keys(opts), function(s, k) {
-              return s + k + '="' + opts[k] + '" ';
-            }, '');
-            return optsStr;
-          }
-        },
-
-        // A function that creates the value part of the html tag, 
-        // for example value = "Bob"
+        // get value for html tag, for example value = "Bob"
         // The value is the value of the `field` attribute of the 
         // input model. 
         // This can be overriden by passing in a `value` option in opts.
-        getValStr: function(model, field, tagName, opts) {
-          value = ""
+        // For a textarea return an empty string if not overriden in opts.
+        getValue: function(model, field, tagName, opts) {
+          value = '';
           if (_.include(_.keys(opts), 'value')) {
             value = opts['value'];
             delete opts['value'];
@@ -238,53 +193,61 @@
             if (tagName != 'textarea') {
               value = model.escape(field);
             }
-          }
-          return 'value="' + value + '" ';
+          } 
+          return value;
         },
 
-        // A function that creates the name part of the html tag.
+        // Creates the name part of the html tag.
         // The name value is the value of the `field` attribute 
         // of the input model. 
         // (For a label, '_label' is appended to the above value).
         // The value can be overriden by passing in a `name` option 
         // in opts.
-        getNameStr: function(model, field, tagName, opts) {
+        getName: function(model, field, tagName, opts) {
           var name = "";
           if (_.include(_.keys(opts), 'name')) {
             name = opts['name'];
             delete opts['name'];
           } else {
-            name = (tagName == 'label') ? field + '_label' : field;
+            if (!_.isNull(field)) {
+              name = (tagName == 'label') ? field + '_label' : field;
+            } 
           }
-          return 'name="' + name + '" ';
+          return name;
         },
 
-        // A function that creates the id part of the html tag.
+        // Create the id part of the html tag.
         // The id value is the value of the `field` attribute of 
         // the input model. 
         // (For a label, '_label' is appended to the above value).
         // The value can be overriden by passing in an `id` option in opts.
-        getIdStr: function(model, field, tagName, opts) {
+        getId: function(model, field, tagName, opts) {
           var id = "";
           if (_.include(_.keys(opts), 'id')) {
             id = opts['id'];
             delete opts['id'];
           } else {
-            id = (tagName == 'label') ? field + '_label' : field;
+            if (!_.isNull(id)) {
+              id = (tagName == 'label') ? field + '_label' : field;
+            }
           }
-          return 'id="' + id + '" ';
+          return id;
         },
-        
-        // prints error messages 
+
+        // Prints error messages 
         errorMessages: function() {
           if (BackboneFormHelper.errorPlacement == 'top') {
-            var s = '';
-            var attrs = this.model.toJSON();
-            var _this = this;
-            var errStr = _.reduce(
-              _.keys(attrs), _this.makeErrMsgFromAttr, s, _this
-            );
-            return errStr;
+            if (!_.isUndefined(BackboneFormHelper.errorFn)) {
+              return BackboneFormHelper.errorFn(model);  
+            } else {
+              var s = '';
+              var attrs = this.model.toJSON();
+              var _this = this;
+              var errStr = _.reduce(
+                _.keys(attrs), _this.makeErrMsgFromAttr, s, _this
+              );
+              return errStr;
+            } 
           } else {
             return '';
           }
@@ -292,28 +255,26 @@
 
         // Internal helper functions - not meant to be called directly.
         
-        // wrap tag in field-with-error span if errors present
-        wrapErrors: function(model, field, tagStr, tagName) {
-          if (model.get('errors') != undefined && 
-          model.get('errors')[field] != undefined) {
-            var e = model.get('errors');
-            var x = e[field];
-            if (tagName != 'label' && 
-            BackboneFormHelper.errorPlacement == 'field') {
-              // if not label tag, show error message
-              return '<span class="' + 
-                BackboneFormHelper.errorFieldClass + '">' + tagStr + 
-                '&nbsp;<span class="field-error-message">' + 
-                model.get('errors')[field] + '</span></span>'; 
+        highlightErrors: function(tag, tagName, field) {
+          if (this.model.get('errors') != undefined && 
+          this.model.get('errors')[field] != undefined) {
+            var e = this.model.get('errors');
+            var error = e[field];
+            if (tagName == 'label') {
+              tag.addClass(BackboneFormHelper.errorLabelClass);
+            } else if (BackboneFormHelper.errorPlacement == 'field') {
+              if (!_.isUndefined(BackboneFormHelper.errorFn)) {
+                tag = BackboneFormHelper.errorFn(tag, error);
+              } else {
+                tag.addClass(BackboneFormHelper.errorFieldClass);
+              }
             } else {
-              return '<span class="' + BackboneFormHelper.errorFieldClass + 
-                '">' + tagStr + '</span>'; 
+              tag.addClass(BackboneFormHelper.errorFieldClass);
             }
-          } else {
-            return tagStr;
           }
+          return tag;
         },
-       
+        
         // creates the error message for an attribute
         makeErrMsgFromAttr: function(s, attr) {
           var errors = this.model.get('errors');
@@ -345,12 +306,52 @@
           }
           return tmp;
         },
+        
+        // A function that generates an array of option hashes.
+        // Each hash has name and value keys, whose values are 
+        // obtained from the `nameAttr` and `nameAttr` attributes 
+        // of each model of the input `collection`.
+        // `include_none` is a boolean attribute that if true, 
+        // generates a `none` option for the option array. 
+        // The name for the `none` option is taken from `opts.none` 
+        // if present, and is "(none)" otherwise
+        generateOptionsArray: function(collection, name_attr, 
+        value_attr, include_none, opts) {
+          options = [];
+
+          if (!_.isUndefined(include_none) && include_none == true) {
+            none_opt = opts.none;
+            if (!_.isUndefined(none_opt) && !_.isNull(none_opt)) {
+              options.push({name: none_opt, value: ''});
+            } else {
+              options.push({name: '(none)', value: ""});
+            }
+          }
+          collection.each(function(o) {
+            options.push({name: o.escape(nameAttr), 
+              value: o.escape(valueAttr)});
+          });
+          return options;
+        },
+        
+        // A function that combine the keys and values in the 
+        // options hash into a string of the form 
+        // `key1 = "value1" key2="value2"`
+        //getOptsStr: function(opts) {
+          //if (opts != undefined) {
+            //var optsStr = _.reduce(_.keys(opts), function(s, k) {
+              //return s + k + '="' + opts[k] + '" ';
+            //}, '');
+            //return optsStr;
+          //}
+        //},
       
       }; // end form object.
 
       
       // Call the function passing in the above object.
       formBodyFn(formObj);
+
     },
 
   };

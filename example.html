@@ -34,52 +34,52 @@
         <table>
           <tr>
             <!-- A label -->
-            <td><%= f.label('first_name', 'First Name') %> </td>
+            <td><%= f.label('first_name', {value: 'First Name'}) %> </td>
             <!-- A textfield -->
             <td><%= f.text('first_name', {placeholder: 'First Name'}) %></td>
           </tr>
           <tr>
-            <td><%= f.label('last_name', 'Last Name') %> </td>
+            <td><%= f.label('last_name', {value: 'Last Name'}) %> </td>
             <td><%= f.text('last_name', {placeholder: 'Last Name'}) %></td>
           </tr>
           <!-- Textarea -->
           <tr>
-            <td><%= f.label('about', 'About') %> </td>
+            <td><%= f.label('about', {value: 'About'}) %> </td>
             <!-- A textarea -->
             <td><%= f.textarea('about', {placeholder: 'About'}) %></td>
           </tr>
           <!-- A field with an error -->
           <tr>
-            <td><%= f.label('email', 'Email') %> </td>
+            <td><%= f.label('email', {value: 'Email'}) %> </td>
             <td><%= f.text('email', {placeholder: 'Email'}) %></td>
           </tr>
           <tr><td><h3>Address</h3></td><td></td></tr>
           <tr>
-            <td><%= f.label('street_1', 'Street Address 1') %> </td>
+            <td><%= f.label('street_1', {value: 'Street Address 1'}) %> </td>
             <td><%= f.text('street_1', {placeholder: 'Street Address 1'}) %></td>
           </tr>
           <tr>
-            <td><%= f.label('street_2', 'Street Address 2') %> </td>
+            <td><%= f.label('street_2', {value: 'Street Address 2'}) %> </td>
             <td><%= f.text('street_2', {placeholder: 'Street Address 2'}) %></td>
           </tr>
           <tr>
-            <td><%= f.label('city', 'City') %> </td>
+            <td><%= f.label('city', {value: 'City'}) %> </td>
             <td><%= f.text('city', {placeholder: 'City'}) %></td>
           </tr>
           <tr>
-            <td><%= f.label('state', 'State') %> </td>
+            <td><%= f.label('state', {value: 'State'}) %> </td>
             <td><%= f.text('state', {placeholder: 'State'}) %></td>
           </tr>
           <tr>
-            <td><%= f.label('country', 'Country') %> </td>
+            <td><%= f.label('country', {value: 'Country'}) %> </td>
             <td><%= f.select('country', countries) %></td>
           </tr>
           <tr>
-            <td><%= f.label('zip', 'Zip') %> </td>
+            <td><%= f.label('zip', {value: 'Zip'}) %> </td>
             <td><%= f.text('zip', {placeholder: 'Country'}) %></td>
           </tr>
           <tr>
-            <td><%= f.label('is_admin', 'Administrator') %> </td>
+            <td><%= f.label('is_admin', {value: 'Administrator'}) %> </td>
             <!-- A checkbox -->
             <td><%= f.checkbox('is_admin') %></td>
           </tr>

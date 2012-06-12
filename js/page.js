@@ -78,7 +78,7 @@ var countries = [
   {name: 'Mexico', value: 'MX'}
 ];
 
-my_err_fn = function(model) {
+myShowErrors = function(model) {
   var errors = model.get('errors');
   var attrs = model.toJSON();
   var s = '<h3 class="field-error-message">Errors found!</h3>';
@@ -97,9 +97,20 @@ my_err_fn = function(model) {
   return err_str;
 }
 
+myErrorField = function(tag, error) {
+  tag.addClass('field-with-error');
+  err = $('<span>');
+  err_label = $('<label>');
+  err_label.html(error);
+  err_label.addClass('field-error-message');
+  return err.append(tag).append(err_label);
+}
+
 BackboneFormHelper.init({
-  errorPlacement: 'top', 
-  errorFnTop: my_err_fn,
+  //errorPlacement: 'top', 
+  //errorFn: myShowErrors,
+  errorPlacement: 'field', 
+  errorFn: myErrorField,
   errorFieldClass: 'field-with-error',
   errorLabelClass: 'field-error-message',
   wrapper: '<li>'
