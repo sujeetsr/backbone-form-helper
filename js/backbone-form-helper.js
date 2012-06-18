@@ -267,6 +267,10 @@
                 tag = BackboneFormHelper.errorFn(tag, error);
               } else {
                 tag.addClass(BackboneFormHelper.errorFieldClass);
+                error_label = $('<label>').addClass(
+                BackboneFormHelper.errorLabelClass).html(error);
+                // create new element and append the tag and error label.
+                tag = $('<span>').append(tag).append(error_label);
               }
             } else {
               tag.addClass(BackboneFormHelper.errorFieldClass);

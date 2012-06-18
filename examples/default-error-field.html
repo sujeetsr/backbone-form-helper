@@ -2,17 +2,39 @@
   
   <head>
     <!-- load libs -->
-    <script src="lib/jquery-1.7.1.min.js"></script>
-    <script src="lib/underscore.js"></script>
-    <script src="lib/backbone-0.5.3.js"></script>
+    <script src="../lib/jquery-1.7.1.min.js"></script>
+    <script src="../lib/underscore.js"></script>
+    <script src="../lib/backbone-0.5.3.js"></script>
     <!-- form helper -->
-    <script src="js/backbone-form-helper.js"></script>
+    <script src="../js/backbone-form-helper.js"></script>
     <!-- load models and views -->
-    <script src="js/page.js"></script>
+    <script src="../js/data.js"></script>
     <!-- styles -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
   </head>
-  
+
+  <script type="text/javascript">
+    // Initialize BackboneFormHelper
+    BackboneFormHelper.init({
+      errorPlacement: 'field', 
+      errorFieldClass: 'field-with-error',
+      errorLabelClass: 'field-error-message',
+      wrapper: '<li>'
+    });
+  </script>
+
+  <script type="text/javascript">
+    // ###Render the view###
+    // On document load, render the view.
+    $(document).ready(function() {
+      // load the templates.
+      load_templates();
+      // Create contact views with json data
+      var view = new ContactView({model: new Contact(data)});
+      // render the contact
+      $('#form-container').append(view.render().el);
+    });
+  </script>
   <body>
 
     <!-- 
@@ -53,6 +75,7 @@
             <td><%= f.label('email', {value: 'Email'}) %> </td>
             <td><%= f.text('email', {placeholder: 'Email'}) %></td>
           </tr>
+          <br>
           <tr><td><h3>Address</h3></td><td></td></tr>
           <tr>
             <td><%= f.label('street_1', {value: 'Street Address 1'}) %> </td>
@@ -103,4 +126,5 @@
   </body>
 
 </html>
+
 
