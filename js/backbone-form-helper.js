@@ -25,7 +25,10 @@
       // The error class that should be added to each input field label 
       // with an error. Default is 'error'
       this.errorLabelClass = opts['errorLabelClass'];
+      // Custom error function, to either display errors, or a field
+      // with error.
       this.errorFn = opts['errorFn'];
+      // wrapper to get tag html.
       this.tagBuilderWrapper = $('<div>');
     },
 
@@ -59,15 +62,17 @@
         },
         
         text: function(field, opts) {
-          return this.tagBuilder(
-            $('<input>').attr({type: 'text'}), 'text', field, opts
+          return this.tagBuilder( 
+            $('<input>').attr({type: 'text'}), 
+            'text', field, opts
           );
         },
 
         // input type="date"
         date: function(field, opts) {
           return this.tagBuilder(
-            $('<input>').attr({type: 'date'}), 'text', field, opts
+            $('<input>').attr({type: 'date'}), 
+            'date', field, opts
           );
         },
 
@@ -78,7 +83,8 @@
             delete opts['value'];
           }
           return this.tagBuilder(
-            $('<label>').attr({'for': field}), 'label', field, opts
+            $('<label>').attr({'for': field}), 
+            'label', field, opts
           );
         },
 
@@ -99,14 +105,16 @@
         // input type="hidden"
         hidden: function(field, opts) {
           return this.tagBuilder(
-            $('<input>').attr({type: 'hidden'}), 'hidden', field, opts
+            $('<input>').attr({type: 'hidden'}), 
+            'hidden', field, opts
           );
         },
         
         // input type="password"
         password: function(field, opts) {
           return this.tagBuilder(
-            $('<input>').attr({type: 'password'}), 'password', field, opts
+            $('<input>').attr({type: 'password'}), 
+            'password', field, opts
           );
         },
 
@@ -121,19 +129,23 @@
 
         // select tag
         select: function(field, optionsArray, opts) {
-          tag = '<select name="' + field + '"> ';
+          select = this.tagBuilder( 
+            $('<select>'), 'select', field, opts, true
+          );
           var _this = this;
           _.each(optionsArray, function(o) {
-            tag += '<option value="' + o.value + '" ';
+            o_opts = { value: o.value, body: o.name }
             if (_this.model.get(field) == o.value) {
-              tag += 'selected = "selected"';
+              o_opts['selected'] = 'selected';
             }
-            tag += '>' + o.name + '</option>';
-          })
-          tag += '</select>';
-          return tag;
+            opt = _this.tagBuilder(
+              $('<option>'), 'option', field, o_opts, true
+            );
+            select.append(opt);
+          });
+          return BackboneFormHelper.tagBuilderWrapper.html(select).html();
         },
-
+        
         // radio
         radio: function(field, optionsArray, opts) {
           tag = '';
@@ -154,8 +166,29 @@
           return tag;
         },
 
+        // Function to print error messages when errorPlacement
+        // is 'top'
+        errorMessages: function() {
+          if (BackboneFormHelper.errorPlacement == 'top') {
+            if (!_.isUndefined(BackboneFormHelper.errorFn)) {
+              return BackboneFormHelper.errorFn(model);  
+            } else {
+              var s = '';
+              var attrs = this.model.toJSON();
+              var _this = this;
+              var errStr = _.reduce(
+                _.keys(attrs), _this.makeErrMsgFromAttr, s, _this
+              );
+              return errStr;
+            } 
+          } else {
+            return '';
+          }
+        },
 
-        tagBuilder: function(tag, tagName, field, opts) {
+        // Helper function to build an html tag;
+        tagBuilder: function(tag, tagName, field, opts, raw) {
+          raw = _.isUndefined(raw) || _.isNull(raw) ? false : true;
           opts = _.isUndefined(opts) ? {} : opts;
           // set name, value and id.
           tag.attr({
@@ -173,11 +206,15 @@
           // set additional options.
           tag.attr(opts);
           tag = this.highlightErrors(tag, tagName, field);
-          return BackboneFormHelper.tagBuilderWrapper.html(tag).html();
+          if (raw) { 
+            return tag;
+          } else {
+            return BackboneFormHelper.tagBuilderWrapper.html(tag).html();
+          }
         },
 
 
-        // ## Utility functions ##
+        // ## Functions used internally ##
 
         // get value for html tag, for example value = "Bob"
         // The value is the value of the `field` attribute of the 
@@ -191,10 +228,26 @@
             delete opts['value'];
           } else {
             if (tagName != 'textarea') {
-              value = model.escape(field);
+              tmp = this.getNestedModelAndField(model, field);
+              value = tmp[0].escape(tmp[1]);
             }
           } 
           return value;
+        },
+        
+        getNestedModelAndField: function(model, field) {
+          fields = field.split(".");
+          new_model = model;
+          if (fields.length > 1) {
+            new_field = fields[fields.length-1];
+            nested_models = fields.slice(0, fields.length-1);
+            new_model = _.reduce(nested_models, function(model, m) {
+              return model.get(m);
+            }, new_model);
+          } else {
+            new_field = fields[0];
+          }
+          return [new_model, new_field]
         },
 
         // Creates the name part of the html tag.
@@ -234,32 +287,16 @@
           return id;
         },
 
-        // Prints error messages 
-        errorMessages: function() {
-          if (BackboneFormHelper.errorPlacement == 'top') {
-            if (!_.isUndefined(BackboneFormHelper.errorFn)) {
-              return BackboneFormHelper.errorFn(model);  
-            } else {
-              var s = '';
-              var attrs = this.model.toJSON();
-              var _this = this;
-              var errStr = _.reduce(
-                _.keys(attrs), _this.makeErrMsgFromAttr, s, _this
-              );
-              return errStr;
-            } 
-          } else {
-            return '';
-          }
-        },
-
         // Internal helper functions - not meant to be called directly.
         
         highlightErrors: function(tag, tagName, field) {
-          if (this.model.get('errors') != undefined && 
-          this.model.get('errors')[field] != undefined) {
-            var e = this.model.get('errors');
-            var error = e[field];
+          tmp = this.getNestedModelAndField(this.model, field);
+          new_model = tmp[0];
+          new_field = tmp[1];
+          if (new_model.get('errors') != undefined && 
+          new_model.get('errors')[new_field] != undefined) {
+            var e = new_model.get('errors');
+            var error = e[new_field];
             if (tagName == 'label') {
               tag.addClass(BackboneFormHelper.errorLabelClass);
             } else if (BackboneFormHelper.errorPlacement == 'field') {
@@ -338,18 +375,6 @@
           return options;
         },
         
-        // A function that combine the keys and values in the 
-        // options hash into a string of the form 
-        // `key1 = "value1" key2="value2"`
-        //getOptsStr: function(opts) {
-          //if (opts != undefined) {
-            //var optsStr = _.reduce(_.keys(opts), function(s, k) {
-              //return s + k + '="' + opts[k] + '" ';
-            //}, '');
-            //return optsStr;
-          //}
-        //},
-      
       }; // end form object.
 
       

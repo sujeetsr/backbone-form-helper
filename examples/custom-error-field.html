@@ -46,7 +46,7 @@
       // load the templates.
       load_templates();
       // Create contact views with json data
-      var view = new ContactView({model: new Contact(data)});
+      var view = new ContactView({model: contact_model});
       // render the contact
       $('#form-container').append(view.render().el);
     });
@@ -95,27 +95,27 @@
           <tr><td><h3>Address</h3></td><td></td></tr>
           <tr>
             <td><%= f.label('street_1', {value: 'Street Address 1'}) %> </td>
-            <td><%= f.text('street_1', {placeholder: 'Street Address 1'}) %></td>
+            <td><%= f.text('address.street_1', {placeholder: 'Street Address 1'}) %></td>
           </tr>
           <tr>
             <td><%= f.label('street_2', {value: 'Street Address 2'}) %> </td>
-            <td><%= f.text('street_2', {placeholder: 'Street Address 2'}) %></td>
+            <td><%= f.text('address.street_2', {placeholder: 'Street Address 2'}) %></td>
           </tr>
           <tr>
             <td><%= f.label('city', {value: 'City'}) %> </td>
-            <td><%= f.text('city', {placeholder: 'City'}) %></td>
+            <td><%= f.text('address.city', {placeholder: 'City'}) %></td>
           </tr>
           <tr>
             <td><%= f.label('state', {value: 'State'}) %> </td>
-            <td><%= f.text('state', {placeholder: 'State'}) %></td>
+            <td><%= f.text('address.state', {placeholder: 'State'}) %></td>
           </tr>
           <tr>
             <td><%= f.label('country', {value: 'Country'}) %> </td>
-            <td><%= f.select('country', countries) %></td>
+            <td><%= f.select('address.country', countries) %></td>
           </tr>
           <tr>
             <td><%= f.label('zip', {value: 'Zip'}) %> </td>
-            <td><%= f.text('zip', {placeholder: 'Country'}) %></td>
+            <td><%= f.text('address.zip', {placeholder: 'Country'}) %></td>
           </tr>
           <tr>
             <td><%= f.label('is_admin', {value: 'Administrator'}) %> </td>

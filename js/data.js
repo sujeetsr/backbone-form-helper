@@ -52,35 +52,48 @@ var ContactView = Backbone.View.extend({
 
 });
 
+var Address = Backbone.Model.extend();
+
 // ###Data###
 // JSON that represents contact data (that would normally come from 
 // the server).  
 // If the result of a server operation has errors, 
 // the data has an errors hash that contains attribute names and 
 // corresponding error messages.
-var data = { 
+var contact_data = { 
   id: 1,
   first_name: 'John',
   last_name: 'Smith',
   email: 'jsmith@example.com',
   about: 'a description for this user account',
+  is_admin: true,
+  // errors hash that contains an error for the email field
+  errors: { 
+    'email': 'An account with this email address already exists',
+  } 
+}; 
+
+var address_data = {
   street_1: '123 California Way',
   street_2: '',
   city: 'San Francisco',
   state: 'California',
   country: 'US',
   zip: '94111',
-  is_admin: true,
-  // errors hash that contains an error for the email field
   errors: { 
-    'email': 'An account with this email address already exists',
     'street_2': 'Street 2 cannot be empty'
   } 
-}; 
+};
 
 var countries = [
   {name: 'United States', value: 'US'},
   {name: 'Canada', value: 'CA'},
   {name: 'Mexico', value: 'MX'}
 ];
+
+var contact_model = new Contact(contact_data);
+var address_model = new Address(address_data);
+// set address for the contact
+contact_model.set({'address': address_model});
+
 

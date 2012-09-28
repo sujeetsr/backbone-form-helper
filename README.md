@@ -11,5 +11,5 @@ Given a Backbone model `contact`, form fields can be generated within underscore
         <% } %>
 
 Examples of usage are in the 'examples' folder.
-The docs directory contains [docco](http://jashkenas.github.com/docco/) generated documentation for `backbone-form-helper.js`, (the file that you need to include to use the form helpers), and `page.js` (javascript for the example page).
+The docs directory contains [docco](http://jashkenas.github.com/docco/) generated documentation for `backbone-form-helper.js`, (the file that you need to include to use the form helpers), and `data.js` (javascript for the examples).
 
