@@ -297,6 +297,11 @@
           new_model.get('errors')[new_field] != undefined) {
             var e = new_model.get('errors');
             var error = e[new_field];
+            if (_.isArray(error)) {
+              // if there are multiple error messages,
+              // combine them into a comma separated list.
+              error = error.join();
+            }
             if (tagName == 'label') {
               tag.addClass(BackboneFormHelper.errorLabelClass);
             } else if (BackboneFormHelper.errorPlacement == 'field') {
