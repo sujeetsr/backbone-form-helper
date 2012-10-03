@@ -95,7 +95,8 @@
             opts['body'] = opts['value'];
             delete opts['value'];
           } else {
-            opts['body'] = model.escape(field);
+            // pass null for tagname because getValue returns null for tagname textarea
+            opts['body'] = this.getValue(this.model, field, null, opts);
           }
           return this.tagBuilder(
             $('<textarea>'), 'textarea', field, opts
