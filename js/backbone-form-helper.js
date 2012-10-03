@@ -121,7 +121,8 @@
         // input type="checkbox"
         checkbox: function(field, opts) {
           var tag = $('<input>').attr({type: 'checkbox'});
-          if (this.model.get(field) == true) {
+          v = this.getValue(this.model, field, 'checkbox', opts);
+          if (v == true || v == 'true') {
             tag.attr({checked: 'true'});
           }
           return this.tagBuilder(tag, 'checkbox', field, opts);
@@ -135,7 +136,7 @@
           var _this = this;
           _.each(optionsArray, function(o) {
             o_opts = { value: o.value, body: o.name }
-            if (_this.model.get(field) == o.value) {
+            if (_this.getValue(_this.model, field, 'select', opts ) == o.value) {
               o_opts['selected'] = 'selected';
             }
             opt = _this.tagBuilder(
@@ -223,6 +224,7 @@
         // For a textarea return an empty string if not overriden in opts.
         getValue: function(model, field, tagName, opts) {
           value = '';
+          opts = _.isUndefined(opts) ? {} : opts;
           if (_.include(_.keys(opts), 'value')) {
             value = opts['value'];
             delete opts['value'];
